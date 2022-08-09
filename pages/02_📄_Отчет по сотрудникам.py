@@ -13,6 +13,7 @@ st.set_page_config(
     page_icon=':chart_with_upwards_trend:',
     layout='wide'
 )
+st.markdown("# Отчет по сотрудникам")
 try:
     user_func = user()
     user = user_func['user']
@@ -25,7 +26,6 @@ try:
         with col1:
             match user.level:
                 case Levels.admin:
-                    st.markdown("# Отчет по сотрудникам")
                     report = cached_report('all')
                     employer = st.selectbox(
                         'Ф.И.О',
@@ -35,7 +35,6 @@ try:
                     user_code = resources[resources['Ф.И.О.'] == employer]['Code'].iloc[0]
                     st.write(user_code)
                 case Levels.leader:
-                    st.markdown("# Отчет по сотрудникам")
                     reports.get_report(f'{user.group_code}-')
                     report = reports.report
                     employer = st.selectbox(
