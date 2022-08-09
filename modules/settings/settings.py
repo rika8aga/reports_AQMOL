@@ -8,7 +8,7 @@ import streamlit_authenticator as stauth
 import locale
 from modules.to_import import resources
 
-locale.setlocale(locale.LC_ALL, "ru")
+locale.setlocale(locale.LC_ALL, "ru_RU.utf8")
 
 
 @dataclass
