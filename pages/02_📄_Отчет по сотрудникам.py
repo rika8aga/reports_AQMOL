@@ -1,12 +1,12 @@
 import streamlit as st
 from datetime import date
-from modules.settings import user
-from modules.export import to_xlsx
-from modules.levels import Levels
-from modules.filtering import by_resource, by_date0
-from modules.plots import resource_pivot, resource_plot
-from modules.to_import import Reports, cached_report, resources
-from modules.selector import date_input
+from modules import user
+from modules import to_xlsx
+from modules import Levels
+from modules import by_resource, by_date0
+from modules import resource_pivot, resource_plot
+from modules import Reports, cached_report, resources
+from modules import date_input
 
 st.set_page_config(
     page_title='Отчет по сотрудникам',

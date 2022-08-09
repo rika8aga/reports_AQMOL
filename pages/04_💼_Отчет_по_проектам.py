@@ -3,8 +3,8 @@ from datetime import datetime
 import pandas as pd
 import plotly_express as px
 import numpy as np
-from modules.settings import to_xlsx, user
-from modules.to_import import cached_expenses
+from modules import to_xlsx_settings, user
+from modules import cached_expenses
 
 st.set_page_config(
     page_title='Отчет по проектам',
@@ -129,7 +129,7 @@ try:
 
                 st.download_button(
                     'Экспорт таблицы',
-                    to_xlsx(table),
+                    to_xlsx_settings(table),
                     file_name=f'По проекту {projects}.xlsx'
                 )
             except ValueError:

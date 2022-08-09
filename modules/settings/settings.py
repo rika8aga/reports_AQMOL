@@ -6,7 +6,7 @@ import pickle
 from io import BytesIO
 import streamlit_authenticator as stauth
 import locale
-from modules.to_import import resources
+from modules import resources
 
 locale.setlocale(locale.LC_ALL, "ru")
 
@@ -29,7 +29,7 @@ class User:
     code: str
 
 
-def to_xlsx(df):
+def to_xlsx_settings(df):
     output = df.sort_values(by='ИТОГО', ascending=True)
     output.columns = output.columns.map(
         lambda x: '.'.join(str(x).split(' ')[0].split('-')[::-1])
