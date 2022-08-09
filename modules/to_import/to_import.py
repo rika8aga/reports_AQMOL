@@ -7,7 +7,7 @@ import locale
 from modules.levels import Groups
 from modules.plots import value_format, float_format
 
-locale.setlocale(locale.LC_ALL, "ru-RU")
+locale.setlocale(locale.LC_ALL, "ru-Ru")
 
 
 @st.experimental_memo(show_spinner=False)
