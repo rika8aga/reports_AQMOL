@@ -6,7 +6,7 @@ import pickle
 from io import BytesIO
 import streamlit_authenticator as stauth
 import locale
-from report_app.to_import import resources
+from modules.to_import import resources
 
 locale.setlocale(locale.LC_ALL, "ru")
 

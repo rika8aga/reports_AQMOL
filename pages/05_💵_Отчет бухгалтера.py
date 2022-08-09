@@ -1,9 +1,9 @@
 import streamlit as st
-from report_app.export import accountant_report_xlsx
-from report_app.settings import user
-from report_app.selector import date_input
-from report_app.to_import import cashed_accountant_report, Report1C
-from report_app.filtering import by_date0
+from modules.export import accountant_report_xlsx
+from modules.settings import user
+from modules.selector import date_input
+from modules.to_import import cashed_accountant_report, Report1C
+from modules.filtering import by_date0
 
 
 st.set_page_config(

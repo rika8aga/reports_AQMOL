@@ -1,6 +1,6 @@
 import streamlit as st
-from report_app.export import ReportFormHead, ReportFormBody
-from report_app.settings import user
+from modules.export import ReportFormHead, ReportFormBody
+from modules.settings import user
 import asyncio
 
 

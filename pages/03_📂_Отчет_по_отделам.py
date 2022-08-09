@@ -1,11 +1,11 @@
 import streamlit as st
-from report_app.settings import user, style_to_xlsx
-from report_app.levels import Levels
-from report_app.filtering import by_group, by_date0
-from report_app.selector import ProjectSelector, MissReports
-from report_app.plots import group_chart
-from report_app.to_import import cached_expenses, GroupReport, resources
-from report_app.selector import Selectors
+from modules.settings import user, style_to_xlsx
+from modules.levels import Levels
+from modules.filtering import by_group, by_date0
+from modules.selector import ProjectSelector, MissReports
+from modules.plots import group_chart
+from modules.to_import import cached_expenses, GroupReport, resources
+from modules.selector import Selectors
 
 st.set_page_config(
     page_title='Отчет по отделам',

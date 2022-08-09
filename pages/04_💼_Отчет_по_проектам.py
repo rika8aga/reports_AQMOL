@@ -3,8 +3,8 @@ from datetime import datetime
 import pandas as pd
 import plotly_express as px
 import numpy as np
-from report_app.settings import to_xlsx, user
-from report_app.to_import import cached_expenses
+from modules.settings import to_xlsx, user
+from modules.to_import import cached_expenses
 
 st.set_page_config(
     page_title='Отчет по проектам',

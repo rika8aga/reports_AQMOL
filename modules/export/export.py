@@ -4,9 +4,9 @@ from io import BytesIO
 import openpyxl
 import pandas as pd
 from openpyxl.styles import Border, Side, Font, Alignment
-from report_app.plots import pivot_table
-from report_app.levels import Levels
-from report_app.to_import import resources, projects, job_types
+from modules.plots import pivot_table
+from modules.levels import Levels
+from modules.to_import import resources, projects, job_types
 
 
 def exel_styling(sheet, df_length):
