@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 import locale
-from modules import Groups
-from modules import value_format, float_format
+from modules.levels import Groups
+from modules.plots import value_format, float_format
 
 locale.setlocale(locale.LC_ALL, "ru")
 
