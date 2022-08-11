@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
 from modules import collision_report
+import plotly_express as px
 
 st.set_page_config(
     page_title='Отчет по коллизиям',
