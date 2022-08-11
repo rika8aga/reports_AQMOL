@@ -42,7 +42,6 @@ try:
                         options=report['Ф.И.О.'].unique()
                     )
                 case Levels.worker:
-                    st.markdown("# Отчет по сотрудникам")
                     employer = st.text_input(
                         'Ф.И.О',
                         value=user.name,
@@ -51,9 +50,6 @@ try:
                     reports.get_report(user.code)
                     report = reports.report
         with col2:
-            st.write('###')
-            st.write('##')
-            st.write('##')
             dates = date_input(-5)
         try:
             by_resource = by_resource(report, employer)

@@ -34,5 +34,4 @@ async def form():
     else:
         st.warning('Пожалуйста авторизуйтесь')
 
-
 asyncio.run(form())
