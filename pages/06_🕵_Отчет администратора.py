@@ -25,7 +25,8 @@ try:
         )
 
         date = datetime.combine(date, datetime.min.time())
-        report_by_date = report[pd.to_datetime(report['Дата отчета'], format='%d.%m.%Y') == date]
+        report_by_date = report[pd.to_datetime(
+            report['Дата отчета'], format='%d.%m.%Y') == date]
         for i, name in resources.iteritems():
             isSend = report_by_date[report_by_date['Ф.И.О.'] == name]
             if not isSend.empty:
@@ -48,4 +49,5 @@ try:
     else:
         st.warning('Доступ ограничен')
 except KeyError:
-    st.info('Перейдите на [Главную страницу](http://192.168.10.123:8501/Главная_страница)')
+    st.info(
+        'Перейдите на [Главную страницу](http://192.168.10.123:8501/Главная_страница)')

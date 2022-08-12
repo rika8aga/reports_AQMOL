@@ -13,7 +13,8 @@ class ProjectSelector:
         self.styled_pivot = None
 
     def select_box(self):
-        projects = self.dataframe['Проект'].drop_duplicates().sort_values().to_list()
+        projects = self.dataframe['Проект'].drop_duplicates(
+        ).sort_values().to_list()
         projects.insert(0, 'Все')
         self.project_selector = st.selectbox(
             'Проект',
@@ -27,7 +28,8 @@ class ProjectSelector:
             case 'Все':
                 self.dataframe_by_project = self.dataframe
             case _:
-                self.dataframe_by_project = self.dataframe[self.dataframe['Проект'] == selected_project]
+                self.dataframe_by_project = self.dataframe[self.dataframe['Проект']
+                                                           == selected_project]
 
     def pivot_by_project(self):
         try:
@@ -73,7 +75,8 @@ def date_input(default):
             diapason = [date_start, date_end]
         case days:
             date_end = date.today()
-            date_start = np.busday_offset(date.today(), days, roll='forward').astype(date)
+            date_start = np.busday_offset(
+                date.today(), days, roll='forward').astype(date)
             diapason = [date_start, date_end]
     return st.date_input('Период', diapason)
 
@@ -98,7 +101,8 @@ class MissReports:
             case True:
                 pass
             case False:
-                self.merged = self.group_resources.merge(self.df[['Ф.И.О.', 'Дата отчета']], how='left', on="Ф.И.О.")
+                self.merged = self.group_resources.merge(
+                    self.df[['Ф.И.О.', 'Дата отчета']], how='left', on="Ф.И.О.")
                 self.merged.drop_duplicates(inplace=True)
 
     def merge_to_pivot(self):
@@ -139,8 +143,8 @@ class Selectors:
         self.period = None
         self.dates = None
         self.value_selector = st.radio(
-            'Показать по:',
-            options=('трудозатратам', 'расходам')
+            'Показать в:',
+            options=('часах', 'днях', 'тенге')
         )
         self.period_selector = st.radio(
             'Период отчета:',
@@ -155,13 +159,17 @@ class Selectors:
                 return self.dates
             case _:
                 self.period = 'Месяц'
-                self.dates = (datetime.strptime('01.01.2019', '%d.%m.%Y'), datetime.today())
+                self.dates = (datetime.strptime(
+                    '01.01.2019', '%d.%m.%Y'), datetime.today())
 
     def select_value_filter(self):
         match self.value_selector:
-            case 'трудозатратам':
+            case 'часах':
                 self.value = 'Часы'
                 self.style_option = 'в часах'
+            case 'днях':
+                self.value = 'Часы'
+                self.style_option = 'в днях'
             case _:
                 self.value = 'Расходы'
                 self.style_option = 'в деньгах'
