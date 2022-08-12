@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly_express as px
+import locale
+
+locale.setlocale(locale.LC_ALL, "ru")
 
 
 def pivot_table(df, index, unit_type):
@@ -81,7 +84,7 @@ def float_format(value, unit_type):
         case float() | int(), 'в процентах':
             return f'{value:.1f}%'
         case float() | int(), 'в деньгах':
-            return f'{value:,.1f}'
+            return f'{locale.format_string("%10.2f", value, grouping=True)}'
 
 
 def value_format(value):

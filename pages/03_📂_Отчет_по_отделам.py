@@ -65,6 +65,11 @@ try:
                 group_report = GroupReport(report_selection)
                 group_report.get_fields()
                 group_report.get_pivot(selector.period, selector.value, selector.style_option)
+                st.download_button(
+                    'Экспорт таблицы',
+                    style_to_xlsx(group_report.styled_pivot),
+                    file_name='По сотрудникам.xlsx'
+                )
             with tab3:
                 miss_reports = MissReports(groups, report_selection, resources())
                 miss_reports.pivot_to_style()
