@@ -148,16 +148,19 @@ class Reports:
         self.report.fillna(value=self.to_fill, inplace=True)
 
     def add_month_columns(self):
-        self.report[['Месяц', 'Номер']] = self.report[self.report_day].apply(get_month)
+        self.report[['Месяц', 'Номер']
+                    ] = self.report[self.report_day].apply(get_month)
 
     def add_work_hours(self):
-        self.report['Рабочие часы'] = self.report['Номер'].apply(get_work_hours)
+        self.report['Рабочие часы'] = self.report['Номер'].apply(
+            get_work_hours)
 
     def add_salaries(self):
         self.report['Оклад'] = self.report['Ф.И.О.'].apply(get_salary)
 
     def date_type(self):
-        self.report[self.report_day] = pd.to_datetime(self.report[self.report_day], format='%d.%m.%Y')
+        self.report[self.report_day] = pd.to_datetime(
+            self.report[self.report_day], format='%d.%m.%Y')
 
     # def code_to_names(self):
     #     self.report['Проект'] = self.report['ID'].apply(get_project_names)
@@ -170,7 +173,8 @@ class Reports:
     def code_to_cipher(self):
         project_names = projects()[['Название проекта', 'ID']]
         self.report = self.report.merge(project_names, how='left', on='ID')
-        self.report.rename(columns={'Название проекта': 'Проект'}, inplace=True)
+        self.report.rename(
+            columns={'Название проекта': 'Проект'}, inplace=True)
 
     def get_report(self, filter_by: str | tuple):
         self.read_csv(filter_by)
@@ -262,7 +266,8 @@ class Report1C:
         self.table_1C = df
 
     def replace_sections(self):
-        self.table_1C['Блок'] = self.table_1C.apply(lambda x: section_by_id(x['ID'], x['Блок']), axis=1)
+        self.table_1C['Блок'] = self.table_1C.apply(
+            lambda x: section_by_id(x['ID'], x['Блок']), axis=1)
 
     def get_length(self):
         self.dataframe_length = len(self.pivot_report)
@@ -272,7 +277,8 @@ class Report1C:
             self.transaction_day = [diapason[1]]
         except IndexError:
             self.transaction_day = [date.today()]
-        self.pivot_report.insert(1, 'Период взаиморасчета', pd.Series(self.transaction_day * self.dataframe_length))
+        self.pivot_report.insert(1, 'Период взаиморасчета', pd.Series(
+            self.transaction_day * self.dataframe_length))
 
     def replace_estimate_job(self):
         self.table_1C['Вид работы'] = self.table_1C.apply(
@@ -281,10 +287,12 @@ class Report1C:
         )
 
     def replace_zero_project(self):
-        self.table_1C['Проект'] = self.table_1C.apply(lambda x: zero_project(x['ID'], x['Проект'], x['Отдел']), axis=1)
+        self.table_1C['Проект'] = self.table_1C.apply(
+            lambda x: zero_project(x['ID'], x['Проект'], x['Отдел']), axis=1)
 
     def get_columns(self):
-        self.table_1C = self.table_1C[['Ф.И.О.', 'Проект', 'Вид работы', 'Блок', 'Расходы']]
+        self.table_1C = self.table_1C[[
+            'Ф.И.О.', 'Проект', 'Вид работы', 'Блок', 'Расходы']]
 
     def create_report(self, df: pd.DataFrame):
         self.report_init(df)
@@ -340,7 +348,7 @@ class GroupReport:
         # ]
 
     def get_fields(self):
-        options = ['Ф.И.О.', 'Проект', 'Вид работы', 'Описание работы']
+        options = ['Ф.И.О.', 'Проект', 'Блок', 'Вид работы', 'Описание работы']
         self.fields = st.multiselect(
             'Поля группировки',
             options=options,
@@ -373,7 +381,8 @@ class GroupReport:
         self.pivot_df.columns = self.pivot_df.columns.map(
             lambda x: '.'.join(str(x).split(' ')[0].split('-')[::-1])
         )
-        self.styled_pivot = self.pivot_df.style.format(lambda x: float_format(x, unit_type))
+        self.styled_pivot = self.pivot_df.style.format(
+            lambda x: float_format(x, unit_type))
         self.styled_pivot = self.styled_pivot.applymap(
             value_format
         )

@@ -45,7 +45,8 @@ try:
                 selector.select_date_filter(-5)
                 selector.select_value_filter()
             report_selection = by_date0(by_group, selector.dates)
-            tab1, tab2, tab3 = st.tabs(['По проектам', 'По сотрудникам', 'Сданы ли отчеты'])
+            tab1, tab2, tab3 = st.tabs(
+                ['По проектам', 'По сотрудникам', 'Сданы ли отчеты'])
             with tab1:
                 project_selector = ProjectSelector(report_selection)
                 project_selector.get_styled_pivot()
@@ -64,14 +65,16 @@ try:
             with tab2:
                 group_report = GroupReport(report_selection)
                 group_report.get_fields()
-                group_report.get_pivot(selector.period, selector.value, selector.style_option)
+                group_report.get_pivot(
+                    selector.period, selector.value, selector.style_option)
                 st.download_button(
                     'Экспорт таблицы',
                     style_to_xlsx(group_report.styled_pivot),
                     file_name='По сотрудникам.xlsx'
                 )
             with tab3:
-                miss_reports = MissReports(groups, report_selection, resources())
+                miss_reports = MissReports(
+                    groups, report_selection, resources())
                 miss_reports.pivot_to_style()
                 missing_reports = miss_reports.missing_reports
                 match missing_reports:
