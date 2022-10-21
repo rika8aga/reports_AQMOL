@@ -12,7 +12,7 @@ locale.setlocale(locale.LC_ALL, "ru")
 
 @st.experimental_memo(show_spinner=False)
 def job_types():
-    return pd.read_excel(r"Z:\11. Bim-отдел\data\types_of_job.xlsx", 'job_types')
+    return pd.read_excel(r"Z:\11. Bim-отдел\data\types_of_job.xlsx", 'job_types',  dtype={'group_code': str})
 
 
 @st.experimental_memo(show_spinner=False)
@@ -135,14 +135,17 @@ class Reports:
         self.report = pd.DataFrame(columns=self.headers)
         self.read_directory(filter_by)
         for file in self.files:
-            df_file = pd.read_csv(
-                file,
-                header=None,
-                names=self.headers,
-                dtype=self.d_types,
-                encoding='utf-8-sig'
-            )
-            self.report = pd.concat([self.report, df_file], ignore_index=True)
+            try:
+                df_file = pd.read_csv(
+                    file,
+                    header=None,
+                    names=self.headers,
+                    dtype=self.d_types,
+                    encoding='utf-8-sig'
+                )
+                self.report = pd.concat([self.report, df_file], ignore_index=True)
+            except:
+                st.write(file)
 
     def fill_na(self):
         self.report.fillna(value=self.to_fill, inplace=True)
@@ -193,6 +196,16 @@ class Reports:
             axis=1
         )
 
+    def reduce_dates(self):
+        self.accountant_report['Всего часов'] = self.accountant_report.groupby(
+            ['Ф.И.О.', 'Номер'], sort=False
+        )['Часы'].transform('sum')
+        self.accountant_report['Процент уменьшения'] = self.accountant_report.apply(
+            lambda x: x['Рабочие часы'] / x['Всего часов'] if x['Рабочие часы'] < x['Всего часов'] else 1,
+            axis=1
+        )
+        self.accountant_report['Часы'] = self.accountant_report['Часы'] * self.accountant_report['Процент уменьшения']
+
     def get_accountant_report(self):
         self.read_csv('all')
         self.fill_na()
@@ -202,6 +215,7 @@ class Reports:
         self.add_work_hours()
         self.add_salaries()
         self.accountant_report = self.report.copy()
+        self.reduce_dates()
         self.accountant_report['Расходы'] = self.accountant_report.apply(
             lambda x: get_task_price(x['Оклад'], x['Часы'], x['Рабочие часы']),
             axis=1
@@ -214,15 +228,18 @@ def zero_project(project_id: str, project_name: str, group_name: str):
             jt = job_types()
             try:
                 zero_job = jt[jt['Отдел'] == group_name]['0-00'].iloc[0]
+                return zero_job
             except IndexError:
                 print(f'{project_id},{project_name},{group_name}')
-            return zero_job
         case _:
             return project_name
 
 
 def for_estimate(group_name: str, project_id: str, job_type: str) -> str:
-    project_type = project_id.split('-')[0]
+    try:
+        project_type = project_id.split('-')[0]
+    except AttributeError:
+        st.write(project_id, group_name, job_type)
     match group_name, project_type:
         case Groups.estimate, '3':
             return 'Сметная документация_3Д'
@@ -251,6 +268,7 @@ def section_by_id(project_id: str, section: str) -> str:
 
 class Report1C:
     def __init__(self):
+        self.selected_group = None
         self.filtered_pivot = None
         self.block_filter = None
         self.job_type_filter = None
@@ -263,7 +281,21 @@ class Report1C:
         self.pivot_report = None
 
     def report_init(self, df: pd.DataFrame):
-        self.table_1C = df
+        self.table_1C: pd.DataFrame = df
+
+    def group_selector(self):
+        group_list = ['Все'] + self.table_1C['Отдел'].drop_duplicates().tolist()
+        self.selected_group = st.selectbox(
+            'Отдел:',
+            options=group_list
+        )
+
+    def filter_by_group(self):
+        match self.selected_group:
+            case 'Все':
+                pass
+            case _:
+                self.table_1C = self.table_1C[self.table_1C['Отдел'] == self.selected_group]
 
     def replace_sections(self):
         self.table_1C['Блок'] = self.table_1C.apply(
@@ -274,11 +306,14 @@ class Report1C:
 
     def add_transaction_column(self, diapason: tuple):
         try:
-            self.transaction_day = [diapason[1]]
+            self.transaction_day = [diapason[0]]
         except IndexError:
             self.transaction_day = [date.today()]
-        self.pivot_report.insert(1, 'Период взаиморасчета', pd.Series(
-            self.transaction_day * self.dataframe_length))
+        self.pivot_report.insert(
+            1,
+            'Период взаиморасчета',
+            pd.Series(self.transaction_day * self.dataframe_length)
+        )
 
     def replace_estimate_job(self):
         self.table_1C['Вид работы'] = self.table_1C.apply(
@@ -292,10 +327,13 @@ class Report1C:
 
     def get_columns(self):
         self.table_1C = self.table_1C[[
-            'Ф.И.О.', 'Проект', 'Вид работы', 'Блок', 'Расходы']]
+            'Ф.И.О.', 'Проект', 'Вид работы', 'Блок', 'Расходы'
+        ]]
 
     def create_report(self, df: pd.DataFrame):
         self.report_init(df)
+        self.group_selector()
+        self.filter_by_group()
         self.replace_sections()
         self.replace_estimate_job()
         self.replace_zero_project()
@@ -332,20 +370,6 @@ class GroupReport:
         self.fields = None
         self.pivot_df = None
         self.index_df = None
-        # self.index_df = [
-        #     'Январь',
-        #     'Февраль',
-        #     'Март',
-        #     'Апрель',
-        #     'Май',
-        #     'Июнь',
-        #     'Июль',
-        #     'Август',
-        #     'Сентябрь',
-        #     'Октябрь',
-        #     'Ноябрь',
-        #     'Декабрь',
-        # ]
 
     def get_fields(self):
         options = ['Ф.И.О.', 'Проект', 'Блок', 'Вид работы', 'Описание работы']

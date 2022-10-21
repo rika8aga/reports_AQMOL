@@ -23,23 +23,22 @@ try:
     user_func['form'].logout('Выйти', 'sidebar')
     match user.level:
         case Levels.leader | Levels.admin:
+            with st.spinner('Загрузка данных'):
+                report = cached_expenses('all')
             match user.level:
                 case Levels.admin:
-                    with st.spinner('Загрузка данных'):
-                        report = cached_expenses('all')
                     groups = st.selectbox(
                         'Отдел',
                         options=report['Отдел'].unique()
                     )
                     by_group = by_group(report, groups)
                 case _:
-                    with st.spinner('Загрузка данных'):
-                        by_group = cached_expenses(f'{user.group_code}-')
-                        groups = st.text_input(
-                            'Отдел',
-                            value=user.group,
-                            disabled=True
-                        )
+                    groups = st.text_input(
+                        'Отдел',
+                        value=user.group,
+                        disabled=True
+                    )
+                    by_group = by_group(report, groups)
             with st.sidebar:
                 selector = Selectors()
                 selector.select_date_filter(-5)
@@ -53,25 +52,33 @@ try:
                 styled_pivot = project_selector.styled_pivot
                 match styled_pivot:
                     case None:
-                        st.write('Нет данных')
+                        st.info('Нет данных')
                     case _:
                         st.table(styled_pivot)
                         st.download_button(
                             'Экспорт таблицы',
                             style_to_xlsx(styled_pivot),
-                            file_name='По проектам.xlsx'
+                            file_name='By projects.xlsx'
                         )
                         group_chart(project_selector.pivot)
             with tab2:
-                group_report = GroupReport(report_selection)
-                group_report.get_fields()
-                group_report.get_pivot(
-                    selector.period, selector.value, selector.style_option)
-                st.download_button(
-                    'Экспорт таблицы',
-                    style_to_xlsx(group_report.styled_pivot),
-                    file_name='По сотрудникам.xlsx'
-                )
+                if selector.leader_selector:
+                    group_report = report_selection
+                else:
+                    group_report = report_selection[report_selection['Ф.И.О.'] != user.name]
+                match len(group_report):
+                    case 0:
+                        st.info('Нет данных')
+                    case _:
+                        group_report = GroupReport(group_report)
+                        group_report.get_fields()
+                        group_report.get_pivot(
+                            selector.period, selector.value, selector.style_option)
+                        st.download_button(
+                            'Экспорт таблицы',
+                            style_to_xlsx(group_report.styled_pivot),
+                            file_name='By employers.xlsx'
+                        )
             with tab3:
                 miss_reports = MissReports(
                     groups, report_selection, resources())

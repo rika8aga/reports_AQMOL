@@ -6,7 +6,7 @@ import pickle
 from io import BytesIO
 import streamlit_authenticator as stauth
 import locale
-from modules.to_import import resources
+from modules.database import load_users_data
 
 locale.setlocale(locale.LC_ALL, "ru")
 
@@ -57,7 +57,7 @@ def block_from_str(string):
 
 def group_from_string(string):
     lst = string.split('>')
-    grp = lst[2].split('_')[4][:2]
+    grp = lst[2].split('_')[3][:2]
     name = lst[6]
     return [grp, name]
 
@@ -69,7 +69,7 @@ def id_by_string(string):
 
 @st.experimental_memo(show_spinner=False)
 def collision_report():
-    directory = r'R:\Отчеты\*.html'
+    directory = r'X:\Отчеты\Отчеты по коллизиям\*.html'
     files = glob(directory)
     collision_reports = pd.DataFrame()
     for file in files:
@@ -92,8 +92,7 @@ def collision_report():
                     new_table = pd.concat([names, info], axis=1)
                     output = pd.concat([output, new_table], ignore_index=True)
         output.dropna(how='all', inplace=True)
-
-        output = output[[0, 2, 6, 8, 12, 13, 14, 16, 17, 18]]
+        output = output[[0, 2, 6, 8, 12, 13, 14, 17, 18, 19]]
         mapping = {
             0: 'Наименование конфликта',
             2: 'Номер конфликта',
@@ -102,12 +101,11 @@ def collision_report():
             12: 'ID_1',
             13: 'Уровень_1',
             14: 'Раздел_1',
-            16: 'ID_2',
-            17: 'Уровень_2',
-            18: 'Раздел_2'
+            17: 'ID_2',
+            18: 'Уровень_2',
+            19: 'Раздел_2'
         }
         output.rename(columns=mapping, inplace=True)
-
         output['Блок'] = output['Раположение'].apply(block_from_str)
         output['Наименование_1'] = output['Раздел_1'].apply(lambda x: group_from_string(x)[1])
         output['Наименование_2'] = output['Раздел_2'].apply(lambda x: group_from_string(x)[1])
@@ -132,8 +130,8 @@ def get_pass(file):
 
 
 def loging():
-    resources_df = resources()
-    names = resources_df['Ф.И.О.']
+    resources_df = load_users_data()
+    names = resources_df['name']
     usernames = resources_df['username']
     file = r"Z:\11. Bim-отдел\data\new_passes.pkl"
     hashed_passwords = get_pass(file)
@@ -148,21 +146,21 @@ def loging():
 
 
 def user():
-    resources_df = resources()
+    resources_df = load_users_data()
     login = loging()
     name = login['name']
     authentication_status = login['status']
     username = login['username']
-    filtered = resources_df[resources_df['Ф.И.О.'] == name]
+    filtered = resources_df[resources_df['name'] == name]
     try:
         level = filtered['level'].iloc[0]
-        code = filtered['Code'].iloc[0]
+        code = filtered['code'].iloc[0]
         if len(filtered) == 1:
-            group = filtered['Отдел'].iloc[0]
+            group = filtered['group_name'].iloc[0]
             group_code = filtered['group_code'].iloc[0]
         else:
-            group = filtered['Отдел'].to_list()
-            group_code = filtered['group_code'].to_list()
+            group = filtered['group_name'].drop_duplicates().to_list()
+            group_code = filtered['group_code'].drop_duplicates().to_list()
 
         user_class = User(
             name=name,

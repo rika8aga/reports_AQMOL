@@ -138,6 +138,7 @@ class MissReports:
 
 class Selectors:
     def __init__(self):
+        self.with_leader = None
         self.style_option = None
         self.value = None
         self.period = None
@@ -149,6 +150,9 @@ class Selectors:
         self.period_selector = st.radio(
             'Период отчета:',
             options=('по датам', 'по месяцам')
+        )
+        self.leader_selector = st.checkbox(
+            'Отображать начальника?'
         )
 
     def select_date_filter(self, default: str | int):
@@ -173,3 +177,9 @@ class Selectors:
             case _:
                 self.value = 'Расходы'
                 self.style_option = 'в деньгах'
+
+    def select_leader(self):
+        if self.leader_selector:
+            self.with_leader = True
+        else:
+            self.with_leader = False

@@ -32,11 +32,11 @@ try:
                     report_1C.create_report(report_selection)
                     report_1C.get_pivot_report(dates)
                     report_df = report_1C.pivot_report
-                    st.dataframe(report_df)
+                    st.dataframe(report_df, use_container_width=True)
                     st.download_button(
                         'Экспорт таблицы',
                         accountant_report_xlsx(report_df),
-                        file_name=f'отчет_{dates[1]}.xlsx'
+                        file_name=f'{dates[1]}.xlsx'
                     )
                 case _:
                     st.warning('Доступ ограничен')

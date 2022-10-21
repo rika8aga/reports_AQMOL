@@ -63,11 +63,11 @@ try:
             if indexes:
                 table = resource_pivot(report_selection, indexes, units)
                 if table is not None:
-                    st.table(table)
+                    st.dataframe(table)
                     st.download_button(
                         'Экспорт таблицы',
-                        to_xlsx(user.name, dates, report_selection, units),
-                        file_name=f'{user.name}_{date.today()}.xlsx'
+                        to_xlsx(employer, dates, report_selection, 'в часах'),
+                        file_name=f'{date.today()}.xlsx'
                     )
                 resource_plot(report_selection, indexes[0])
                 if st.button('Обновить данные'):

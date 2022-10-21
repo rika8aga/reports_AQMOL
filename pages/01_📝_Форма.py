@@ -28,10 +28,10 @@ async def form():
             form_head.user,
             form_head.fields_number,
             form_head.user_jobs,
-            form_head.projects
         )
         form_body.form(form_head.user_jobs)
     else:
         st.warning('Пожалуйста авторизуйтесь')
 
 asyncio.run(form())
+
